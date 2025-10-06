@@ -1,0 +1,70 @@
+{% extends 'library/base.html' %}
+{% block title %}Library Catalog{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto; padding: 20px;">
+    <h2 style="text-align:center; font-size: 2em; color:#4a3f35; margin-bottom: 20px;">📚 Library Catalog</h2>
+
+    <!-- 🔍 Search and Filter Bar -->
+    <form method="GET" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+        <input 
+            type="text" 
+            name="search" 
+            placeholder="Search by title or author..." 
+            value="{{ search_query }}" 
+            style="padding:10px; width:300px; border:1px solid #b6a28e; border-radius:8px; font-family:'Merriweather'; background-color:#fdfaf6;"
+        >
+
+        <select name="category" style="padding:10px; border:1px solid #b6a28e; border-radius:8px; background-color:#fdfaf6;">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" style="background-color:#4a3f35; color:#f5f3ee; padding:10px 18px; border:none; border-radius:8px; cursor:pointer;">
+            🔎 Search
+        </button>
+    </form>
+
+    <!-- 🧾 Book Cards -->
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        {% for book in books %}
+        <div style="background: #fffaf3; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); width: 280px; overflow: hidden; text-align:center;">
+            
+            {% if book.cover %}
+                <img src="{{ book.cover.url }}" alt="{{ book.title }}" style="width:100%; height: 300px; object-fit: cover;">
+            {% else %}
+                <img src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png" alt="Default Cover" style="width:100%; height: 150px; object-fit: contain; background-color:#f9f5ef;">
+            {% endif %}
+            
+            <div style="padding: 15px;">
+                <h3 style="margin: 0; color:#3b2f2f;">{{ book.title }}</h3>
+                <p style="margin: 5px 0; font-style: italic;">by {{ book.author.name }}</p>
+                <p style="font-size: 0.9em;">📅 Published: {{ book.published }}</p>
+
+                <div style="margin-top: 10px;">
+                    {% for cat in book.categories.all %}
+                        <span style="background-color: #d4c3a3; color: #4a3f35; padding: 4px 8px; border-radius: 6px; margin: 2px; display:inline-block;">{{ cat.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No books found matching your search.</p>
+        {% endfor %}
+    </div>
+
+    <hr style="margin: 40px 0; border-top: 2px solid #d4c3a3;">
+
+    <!-- 📂 Category Display -->
+    <h3 style="text-align:center; color:#4a3f35;">📂 Categories</h3>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;">
+        {% for category in categories %}
+            <span style="background-color:#4a3f35; color:#f5f3ee; padding:8px 14px; border-radius:20px;">{{ category.name }}</span>
+        {% empty %}
+            <p>No categories available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
